@@ -2,8 +2,7 @@
 
 This Microsoft Azure template deploys a single rise-core which will connect to the public rise-core network.
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
-<a href="http://armviz.io/#/?load=" target="_blank"><img src="http://armviz.io/visualizebutton.png"/></a>
+[![Deploy To Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https://bitbucket.org/risevisionfoundation/rise-installers/raw/51c1aa371e2dc73c560631e8a8d5bd08129c25f0/azureInstaller/build_rise.sh)
 
 # Template Parameters
 
