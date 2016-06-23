@@ -9,6 +9,8 @@ ps axjf
 AZUREUSER=$2
 HOMEDIR="/home/$AZUREUSER"
 VMNAME=`hostname`
+BLOCK="/etc/nginx/sites-enabled/default"
+
 echo "User: $AZUREUSER"
 echo "User home dir: $HOMEDIR"
 echo "rise-core path: $HOMEDIR/rise-core"
@@ -66,7 +68,8 @@ git clone https://bitbucket.org/risevisionfoundation/rise-core.git
 # Configure
 echo "Installing Dependencies for Rise-Core"
 cd rise-core
-sudo npm install -g forever
+sudo npm install -g pm2
+sudo pm2 startup
 npm install --production
 
 echo "Installing Dependencies for Web-UI"
@@ -75,9 +78,38 @@ npm install --production
 
 cd ../
 
-npm start
+echo "Installing Nginx and SSL"
+sudo apt-get install Nginx
 
-forever list
+sudo tee $BLOCK > /dev/null <<EOF 
+upstream rise_core {
+    server 127.0.0.1:4040;
+}
+
+server {
+    listen 80;
+    server_name $hostname;
+
+    location / {
+     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+     proxy_set_header Host $http_host;
+     proxy_set_header X-NginX-Proxy true;
+     proxy_http_version 1.1;
+     proxy_set_header Upgrade $http_upgrade;
+     proxy_set_header Connection "upgrade";
+     proxy_max_temp_file_size 0;
+     proxy_pass http://rise_core/;
+     proxy_redirect off;
+     proxy_read_timeout 240s;
+    }
+}
+EOF
+
+sudo service nginx reload
+
+sudo pm2 start app.js
+sudo pm2 save
+
 echo "You should rise-core running in the above list"
 echo ""
 echo "Run the following command to start Rise-Core on Testnet if you need to start Rise-Core after a reboot. You will
