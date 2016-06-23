@@ -197,7 +197,7 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
-            "https://bitbucket.org/risevisionfoundation/rise-installers/rise-on-ubuntu/build_rise.sh"
+            "https://bitbucket.org/risevisionfoundation/rise-installers/raw/51c1aa371e2dc73c560631e8a8d5bd08129c25f0/azureInstaller/build_rise.sh"
           ],
           "commandToExecute": "['sh build_rise.sh']"
         }
