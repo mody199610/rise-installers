@@ -115,8 +115,6 @@ cd public
 npm install --production
 
 cd ../
-
-echo "Configuring LetsEncrypt - This will use your hostname
 npm start
 
 forever list
