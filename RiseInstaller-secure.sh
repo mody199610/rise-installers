@@ -118,6 +118,7 @@ chmod a+x ./certbot-auto
 
 certbot certonly -d $VMNAME -m $email --agree-tos -n --no-verify-ssl
 
+sudo mkdir /etc/nginx/ssl
 cp -R /etc/letsencrypt/live/$VMNAME /etc/nginx/ssl
 sudo chmod -R 600 /etc/nginx/ssl
 
