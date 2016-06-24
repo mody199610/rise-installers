@@ -72,8 +72,7 @@ git clone https://bitbucket.org/risevisionfoundation/rise-core.git
 # Configure
 echo "Installing Dependencies for Rise-Core"
 cd rise-core
-npm install -g pm2
-sudo pm2 startup
+npm install -g forever
 npm install --production
 
 echo "Installing Dependencies for Web-UI"
@@ -130,8 +129,7 @@ sudo chmod -R 600 /etc/nginx/ssl
 
 sudo service nginx reload
 
-pm2 start app.js
-pm2 save
+forever start app.js
 
 echo "You should rise-core running in the above list"
 echo ""
