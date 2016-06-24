@@ -16,29 +16,35 @@ echo "vmname: $VMNAME"
 
 platform='ubuntu'
 echo "Ubuntu detected - installing Rise-Core"
-
 	#Install pre-reqs
 curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
 wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | sudo apt-key add -
 
 sudo apt-get purge -y nodejs
+
 sudo apt-get purge -y postgresql*
 
 # Install Postgres, Node, Git
 sudo apt-get update
 sudo apt-get install -y nodejs postgresql
+mkdir ~/.npm-global
+npm config set prefix '~/.npm-global'
+touch ~/.profile
+echo "export PATH=~/.npm-global/bin:$PATH" >> ~/.profile
+source ~/.profile
+
 sudo apt-get install -y postgresql-contrib libpq-dev git build-essential
 
 # Configure Firewall
 sudo apt-get install -y ufw
 
 sudo ufw disable
-sudo ufw deny all
+sudo ufw default deny incoming
 sudo ufw allow ssh
 sudo ufw allow http
 sudo ufw allow https
-sudo ufw allow tcp/4000
+sudo ufw allow 4242/tcp
 sudo ufw enable
 
 # Configure Postgres
@@ -66,7 +72,7 @@ git clone https://bitbucket.org/risevisionfoundation/rise-core.git
 # Configure
 echo "Installing Dependencies for Rise-Core"
 cd rise-core
-sudo npm install -g pm2
+npm install -g pm2
 sudo pm2 startup
 npm install --production
 
@@ -124,8 +130,8 @@ sudo chmod -R 600 /etc/nginx/ssl
 
 sudo service nginx reload
 
-sudo pm2 start app.js
-sudo pm2 save
+pm2 start app.js
+pm2 save
 
 echo "You should rise-core running in the above list"
 echo ""
