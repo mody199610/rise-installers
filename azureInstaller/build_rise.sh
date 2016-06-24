@@ -89,6 +89,15 @@ upstream rise_core {
 server {
     listen 80;
     server_name $hostname;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443;
+    server_name $hostname;
+
+    ssl_certificate /etc/nginx/ssl/$hostname/fullchain.pem;
+    ssl_certificate_key /etc/nginx/ssl/$hostname/private.pem;
 
     location / {
      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -104,6 +113,15 @@ server {
     }
 }
 EOF
+
+wget https://dl.eff.org/certbot-auto
+chmod a+x ./certbot-auto
+./certbot-auto
+
+certbot certonly -d $hostname -m $email --agree-tos -n --no-verify-ssl
+
+cp -R /etc/letsencrypt/live/$hostname /etc/nginx/ssl
+sudo chmod -R 600 /etc/nginx/ssl
 
 sudo service nginx reload
 
