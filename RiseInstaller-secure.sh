@@ -83,36 +83,30 @@ cd ../
 
 echo "Installing Nginx and SSL"
 sudo apt-get install -y nginx
+sudo service nginx stop
 
 sudo tee $BLOCK > /dev/null <<EOF 
-upstream rise_core {
-    server 127.0.0.1:4040;
-}
 
 server {
     listen 80;
     server_name $VMNAME;
-    return 301 https://$host$request_uri;
+    return 301 https://\$host\$request_uri;
 }
 
 server {
-    listen 443;
+    listen 443 ssl;
     server_name $VMNAME;
 
-    ssl_certificate /etc/nginx/ssl/$VMNAME/fullchain.pem;
-    ssl_certificate_key /etc/nginx/ssl/$VMNAME/private.pem;
+    ssl_certificate /etc/letsencrypt/live/$VMNAME/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$VMNAME/privkey.pem;
 
     location / {
-     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-     proxy_set_header Host $http_host;
-     proxy_set_header X-NginX-Proxy true;
-     proxy_http_version 1.1;
-     proxy_set_header Upgrade $http_upgrade;
-     proxy_set_header Connection "upgrade";
-     proxy_max_temp_file_size 0;
-     proxy_pass http://rise_core/;
-     proxy_redirect off;
-     proxy_read_timeout 240s;
+        proxy_pass http://localhost:4242;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
     }
 }
 EOF
@@ -125,7 +119,7 @@ sudo mkdir /etc/nginx/ssl
 cp -R /etc/letsencrypt/live/$VMNAME /etc/nginx/ssl
 sudo chmod -R 600 /etc/nginx/ssl
 
-sudo service nginx reload
+sudo service nginx start
 
 forever start app.js
 
