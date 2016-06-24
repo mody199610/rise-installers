@@ -45,7 +45,7 @@ sudo ufw allow ssh
 sudo ufw allow http
 sudo ufw allow https
 sudo ufw allow 4242/tcp
-sudo ufw enable
+sudo ufw --force enable
 
 # Configure Postgres
 sudo -u postgres psql -c "CREATE DATABASE rise_testnet;"
@@ -82,7 +82,7 @@ npm install --production
 cd ../
 
 echo "Installing Nginx and SSL"
-sudo apt-get install Nginx
+sudo apt-get install -y nginx
 
 sudo tee $BLOCK > /dev/null <<EOF 
 upstream rise_core {
@@ -119,9 +119,7 @@ EOF
 
 wget https://dl.eff.org/certbot-auto
 chmod a+x ./certbot-auto
-./certbot-auto
-
-certbot-auto certonly -d $VMNAME -m $email --agree-tos -n --no-verify-ssl
+./certbot-auto certonly -d $VMNAME -m $email --agree-tos -n --no-verify-ssl 
 
 sudo mkdir /etc/nginx/ssl
 cp -R /etc/letsencrypt/live/$VMNAME /etc/nginx/ssl
