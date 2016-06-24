@@ -121,7 +121,7 @@ wget https://dl.eff.org/certbot-auto
 chmod a+x ./certbot-auto
 ./certbot-auto
 
-certbot certonly -d $VMNAME -m $email --agree-tos -n --no-verify-ssl
+certbot-auto certonly -d $VMNAME -m $email --agree-tos -n --no-verify-ssl
 
 sudo mkdir /etc/nginx/ssl
 cp -R /etc/letsencrypt/live/$VMNAME /etc/nginx/ssl
