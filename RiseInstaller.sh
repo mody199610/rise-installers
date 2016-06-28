@@ -22,9 +22,9 @@ if [[ $unamestr == 'Darwin' ]]; then
 	open -a Postgres
 	sudo spctl --master-enable
 	# Configure Postgres
-	psql -U $USER -c "CREATE DATABASE rise_testnet;"
-	psql -U $USER -c "CREATE USER risetest WITH PASSWORD 'risetestpassword';"
-	psql -U $USER -c "GRANT ALL PRIVILEGES ON DATABASE rise_testnet TO risetest;"
+	psql -U $USER -c "CREATE DATABASE rise_mainnet;"
+	psql -U $USER -c "CREATE USER rise WITH PASSWORD '8E&)J}pzHt=4sHya';"
+	psql -U $USER -c "GRANT ALL PRIVILEGES ON DATABASE rise_mainnet TO rise;"
 elif [[ `lsb_release -i -s` == 'Ubuntu' ]]; then
     platform='ubuntu'
     echo "Ubuntu detected - installing Rise-Core"
@@ -50,9 +50,9 @@ elif [[ `lsb_release -i -s` == 'Ubuntu' ]]; then
     sudo ufw allow http
     sudo ufw allow https
 	# Configure Postgres
-	sudo -u postgres psql -c "CREATE DATABASE rise_testnet;"
-	sudo -u postgres psql -c "CREATE USER risetest WITH PASSWORD 'risetestpassword';"
-	sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE rise_testnet TO risetest;"
+	sudo -u postgres psql -c "CREATE DATABASE rise_mainnet;"
+	sudo -u postgres psql -c "CREATE USER rise WITH PASSWORD '8E&)J}pzHt=4sHya';"
+	sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE rise_mainnet TO rise;"
 
 elif [[ -f "/etc/redhat-release" &&  ! -f "/proc/user_beancounters" ]]; then
     echo "RedHat is not currently supported"
