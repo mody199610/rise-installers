@@ -84,6 +84,7 @@ if [[ "$(uname)" == "Linux" ]]; then
                 exit 0
             fi
         fi #End Debian Checks
+    fi
 elif [[ "$(uname)" == "Darwin" ]]; then
     if pgrep -x "ntpd" > /dev/null; then
         echo "√ NTP is running"
