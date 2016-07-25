@@ -48,9 +48,9 @@ sudo ufw allow 4242/tcp
 sudo ufw --force enable
 
 # Configure Postgres
-sudo -u postgres psql -c "CREATE DATABASE rise_testnet;"
-sudo -u postgres psql -c "CREATE USER risetest WITH PASSWORD 'risetestpassword';"
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE rise_testnet TO risetest;"
+sudo -u postgres psql -c "CREATE DATABASE rise_mainnet;"
+sudo -u postgres psql -c "CREATE USER rise WITH PASSWORD '8E&)J}pzHt=4sHya';"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE rise_mainnet TO rise;"
 
 if sudo pgrep -x "ntpd" > /dev/null; then
     echo "√ NTP is running"
