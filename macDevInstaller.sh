@@ -4,7 +4,7 @@ brew install git node
 
 # Install Postgres
 echo "Downloading Postgres.app, unzipping it, and putting it into Applications"
-curl -O "https://rise.vision/cdn/Postgres.zip"
+curl -sO "https://rise.vision/cdn/Postgres.zip"
 
 unzip Postgres.zip
 mv Postgres.app /Applications
