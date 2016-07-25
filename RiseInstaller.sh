@@ -25,6 +25,19 @@ if [[ $unamestr == 'Darwin' ]]; then
 	psql -U $USER -c "CREATE DATABASE rise_testnet;"
 	psql -U $USER -c "CREATE USER risetest WITH PASSWORD 'risetestpassword';"
 	psql -U $USER -c "GRANT ALL PRIVILEGES ON DATABASE rise_testnet TO risetest;"
+
+    if pgrep -x "ntpd" > /dev/null; then
+        echo "√ NTP is running"
+    else
+        sudo launchctl load /System/Library/LaunchDaemons/org.ntp.ntpd.plist
+        sleep 1
+        if pgrep -x "ntpd" > /dev/null; then
+            echo "√ NTP is running"
+        else
+            echo -e "\nNTP did not start, Please verify its configured on your system"
+            exit 0
+        fi
+    fi  #End Darwin Checks
 elif [[ `lsb_release -i -s` == 'Ubuntu' ]]; then
     platform='ubuntu'
     echo "Ubuntu detected - installing Rise-Core"
@@ -45,14 +58,31 @@ elif [[ `lsb_release -i -s` == 'Ubuntu' ]]; then
     # Configure Firewall
     sudo apt-get install -y ufw
 
-    sudo ufw deny all
+    sudo ufw default deny all
     sudo ufw allow ssh
     sudo ufw allow http
     sudo ufw allow https
+    sudo ufw allow 4242
 	# Configure Postgres
-	sudo -u postgres psql -c "CREATE DATABASE rise_testnet;"
-	sudo -u postgres psql -c "CREATE USER risetest WITH PASSWORD 'risetestpassword';"
-	sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE rise_testnet TO risetest;"
+	sudo -u postgres psql -c "CREATE DATABASE rise_mainnet;"
+	sudo -u postgres psql -c "CREATE USER rise WITH PASSWORD '8E&)J}pzHt=4sHya';"
+	sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE rise_mainnet TO rise;"
+
+    if sudo pgrep -x "ntpd" > /dev/null; then
+            echo "√ NTP is running"
+        else
+            echo "X NTP is not running"
+            sudo apt-get install ntp -yq
+            sudo service ntp stop
+            sudo ntpdate pool.ntp.org
+            sudo service ntp start
+            if sudo pgrep -x "ntpd" > /dev/null; then
+                echo "√ NTP is running"
+            else
+                echo -e "\nLisk requires NTP running on Debian based systems. Please check /etc/ntp.conf and correct any issues."
+                exit 0
+            fi
+        fi #End Debian Checks
 
 elif [[ -f "/etc/redhat-release" &&  ! -f "/proc/user_beancounters" ]]; then
     echo "RedHat is not currently supported"
@@ -64,40 +94,6 @@ elif [[ "$(uname)" == "FreeBSD" ]]; then
    echo "FreeBSD is not currently Supported"
    exit 0;
 fi
-echo "configuring NTP"
-#Install NTP or Chrony for Time Management - Physical Machines only
-if [[ "$(uname)" == "Linux" ]]; then
-    if [[ -f "/etc/debian_version" &&  ! -f "/proc/user_beancounters" ]]; then
-        if sudo pgrep -x "ntpd" > /dev/null; then
-            echo "√ NTP is running"
-        else
-            echo "X NTP is not running"
-            echo -e "\nInstalling NTP, please provide sudo password.\n"
-            sudo apt-get install ntp -yyq
-            sudo service ntp stop
-            sudo ntpdate pool.ntp.org
-            sudo service ntp start
-            if sudo pgrep -x "ntpd" > /dev/null; then
-                echo "√ NTP is running"
-            else
-                echo -e "\nLisk requires NTP running on Debian based systems. Please check /etc/ntp.conf and correct any issues."
-                exit 0
-            fi
-        fi #End Debian Checks
-elif [[ "$(uname)" == "Darwin" ]]; then
-    if pgrep -x "ntpd" > /dev/null; then
-        echo "√ NTP is running"
-    else
-        sudo launchctl load /System/Library/LaunchDaemons/org.ntp.ntpd.plist
-        sleep 1
-        if pgrep -x "ntpd" > /dev/null; then
-            echo "√ NTP is running"
-        else
-            echo -e "\nNTP did not start, Please verify its configured on your system"
-            exit 0
-        fi
-    fi  #End Darwin Checks
-fi #End NTP Checks
 echo ""
 echo ""
 
@@ -107,7 +103,8 @@ git clone https://bitbucket.org/risevisionfoundation/rise-core.git
 # Configure
 echo "Installing Dependencies for Rise-Core"
 cd rise-core
-sudo npm install -g forever
+sudo npm install -g forever forever-service
+sudo forever-service install rise-core
 npm install --production
 
 echo "Installing Dependencies for Web-UI"
@@ -115,14 +112,11 @@ cd public
 npm install --production
 
 cd ../
-npm start
 
-forever list
-echo "You should rise-core running in the above list"
-echo ""
-echo "Run the following command to start Rise-Core on Testnet if you need to start Rise-Core after a reboot. You will
- need to be in the rise-core directory"
-echo "npm start"
+sudo start rise-core
+
+echo "To check the status of rise-core run:"
+echo "status rise-core"
 echo ""
 echo "Exiting"
 exit 1
