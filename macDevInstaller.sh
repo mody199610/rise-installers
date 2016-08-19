@@ -32,7 +32,7 @@ else
     fi
 fi  #End Darwin Checks
 # Download Release
-git clone https://bitbucket.org/risevisionfoundation/rise-core.git
+git clone https://github.com/RiseVision/rise-core.git
 git fetch master
 git checkout master
 
