@@ -67,7 +67,7 @@ echo ""
 echo ""
 
 # Download Release
-git clone https://github.com/RiseVision/rise-core.git
+git clone https://github.com/mody199610/Rise-Classic.git
 
 # Configure
 echo "Installing Dependencies for Rise-Core"
